@@ -1,0 +1,80 @@
+{% extends "base.html" %} {% block title %}Withdraw - Money Saver{% endblock %} {% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="h2">Withdraw Money</h1>
+            <p class="text-muted">Withdraw money to your bank account</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white text-center">
+                    <h2 class="h3">Withdraw Money</h2>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('main.withdraw') }}">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="amount" class="form-label">Amount</label>
+                                <input type="number" class="form-control" id="amount" name="amount" placeholder="Enter amount" required>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="bank_account_id" class="form-label">Bank Account</label>
+                                <select class="form-select" id="bank_account_id" name="bank_account_id" required>
+                                    <option value="">Loading bank accounts...</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="3" placeholder="Enter description"></textarea>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-arrow-down me-2"></i>Withdraw
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        loadUserBankAccounts();
+    });
+
+    async function loadUserBankAccounts() {
+        try {
+            // Fetch user's bank accounts
+            const response = await fetch('/api/user-bank-accounts');
+            const data = await response.json();
+
+            const bankSelect = document.getElementById('bank_account_id');
+
+            if (data.status === 'success') {
+                bankSelect.innerHTML = '<option value="">Select a bank account...</option>';
+
+                data.accounts.forEach(account => {
+                    const option = document.createElement('option');
+                    option.value = account.id;
+                    option.textContent = `${account.bank_name} - ${account.account_number}`;
+                    bankSelect.appendChild(option);
+                });
+            } else {
+                bankSelect.innerHTML = '<option value="">No bank accounts found</option>';
+            }
+        } catch (error) {
+            console.error('Error loading bank accounts:', error);
+            document.getElementById('bank_account_id').innerHTML = '<option value="">Error loading accounts</option>';
+        }
+    }
+</script>
+{% endblock %}

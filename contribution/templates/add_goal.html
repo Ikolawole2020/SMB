@@ -1,0 +1,75 @@
+{% extends "base.html" %} {% block title %}Add Goal - Money Saver{% endblock %} {% block content %}
+<!-- Add Goal Page -->
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="card shadow-lg">
+                    <div class="card-header bg-primary text-white text-center">
+                        <h2 class="mb-0">
+                            <i class="fas fa-bullseye me-2"></i>Add Goal
+                        </h2>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" action="{{ url_for('main.add_goal') }}">
+                            {{ form.hidden_tag() }}
+
+                            <div class="mb-3">
+                                {{ form.title.label(class="form-label") }} {{ form.title(class="form-control", placeholder="Goal Title") }} {% if form.title.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.title.errors %} {{ error }} {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-3">
+                                {{ form.description.label(class="form-label") }} {{ form.description(class="form-control", placeholder="Description") }} {% if form.description.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.description.errors %} {{ error }} {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-3">
+                                {{ form.target_amount.label(class="form-label") }} {{ form.target_amount(class="form-control", placeholder="Target Amount") }} {% if form.target_amount.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.target_amount.errors %} {{ error }} {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-3">
+                                {{ form.deadline.label(class="form-label") }} {{ form.deadline(class="form-control") }} {% if form.deadline.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.deadline.errors %} {{ error }} {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-3">
+                                {{ form.category.label(class="form-label") }} {{ form.category(class="form-select") }} {% if form.category.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.category.errors %} {{ error }} {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-3">
+                                {{ form.priority.label(class="form-label") }} {{ form.priority(class="form-select") }} {% if form.priority.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.priority.errors %} {{ error }} {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="d-grid">
+                                {{ form.submit(class="btn btn-primary btn-lg") }}
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

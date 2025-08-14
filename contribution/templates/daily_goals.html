@@ -1,0 +1,81 @@
+<!-- Daily Goals Page -->
+{% extends "base.html" %} {% block title %}Daily Goals - Money Saver{% endblock %} {% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2><i class="fas fa-calendar-day me-2"></i>Daily Goals</h2>
+                    <a href="{{ url_for('main.add_daily_goal') }}" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Add New Daily Goal
+                    </a>
+                </div>
+
+                {% if daily_goals.items %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Amount</th>
+                                <th>Description</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for goal in daily_goals.items %}
+                            <tr>
+                                <td>{{ goal.date.strftime('%Y-%m-%d') }}</td>
+                                <td>₦{{ "{:,.2f}".format(goal.amount) }}</td>
+                                <td>{{ goal.description }}</td>
+                                <td>
+                                    {% if goal.is_completed %}
+                                    <span class="badge bg-success">Completed</span> {% else %}
+                                    <span class="badge bg-warning">Pending</span> {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                    <!-- Pagination -->
+                    {% if daily_goals.pages > 1 %}
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            {% if daily_goals.has_prev %}
+                            <li class="page-item"> <a class="page-link" href="{{ url_for('main.daily_goals', page=daily_goals.prev_num) }}">Previous</a> {% endif %} {% for page_num in daily_goals.iter_pages() %} {% if page_num %} {% if page_num != daily_goals.page %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ url_for('main.daily_goals', page=page_num) }}">{{ page_num }}</a>
+                                </li>
+                                {% else %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ page_num }}</span>
+                                </li>
+                                {% endif %} {% else %}
+                                <li class="page-item disabled">
+                                    <span class="page-link">...</span>
+                                </li>
+                                {% endif %} {% endfor %} {% if daily_goals.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ url_for('main.daily_goals', page=daily_goals.next_num) }}">Next</a>
+                                </li>
+                                {% endif %}
+                        </ul>
+                    </nav>
+                    {% endif %}
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-calendar-day fa-3x text-muted mb-3"></i>
+                    <h4 class="text-muted">No daily goals yet</h4>
+                    <p class="text-muted">Start by adding your first daily goal!</p>
+                    <a href="{{ url_for('main.add_daily_goal') }}" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Add Daily Goal
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

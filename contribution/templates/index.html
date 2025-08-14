@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block title %}Money Saver - Save Money, Achieve Goals{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section bg-gradient-primary text-white py-5">
+    <div class="container">
+        <div class="row align-items-center min-vh-50">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">
+                    Save Money, <br>
+                    <span class="text-warning">Achieve Your Goals</span>
+                </h1>
+                <p class="lead mb-4">
+                    Take control of your finances with our modern money-saving app. 
+                    Set goals, track transactions, and watch your savings grow.
+                </p>
+                <div class="d-flex gap-3">
+                    {% if not current_user.is_authenticated %}
+                        <a href="{{ url_for('main.register') }}" class="btn btn-warning btn-lg">
+                            <i class="fas fa-user-plus me-2"></i>Get Started Free
+                        </a>
+                        <a href="{{ url_for('main.login') }}" class="btn btn-outline-light btn-lg">
+                            <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                        </a>
+                    {% else %}
+                        <a href="{{ url_for('main.dashboard') }}" class="btn btn-warning btn-lg">
+                            <i class="fas fa-tachometer-alt me-2"></i>Go to Dashboard
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="text-center">
+                    <i class="fas fa-piggy-bank" style="font-size: 200px; opacity: 0.8;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center mb-5">
+                <h2 class="display-5 fw-bold">Why Choose Money Saver?</h2>
+                <p class="lead text-muted">Everything you need to achieve your financial goals</p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="fas fa-bullseye fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">Set Financial Goals</h5>
+                        <p class="card-text">Create and track your savings goals with detailed progress monitoring.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="fas fa-chart-line fa-3x text-success mb-3"></i>
+                        <h5 class="card-title">Track Transactions</h5>
+                        <p class="card-text">Monitor all your deposits, withdrawals, and transfers in one place.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="fas fa-calendar-day fa-3x text-warning mb-3"></i>
+                        <h5 class="card-title">Daily Goals</h5>
+                        <p class="card-text">Set daily saving targets and build consistent saving habits.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="fas fa-university fa-3x text-info mb-3"></i>
+                        <h5 class="card-title">Bank Integration</h5>
+                        <p class="card-text">Connect your Nigerian bank accounts for seamless deposits and withdrawals.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="fas fa-chart-pie fa-3x text-danger mb-3"></i>
+                        <h5 class="card-title">Smart Analytics</h5>
+                        <p class="card-text">Get insights into your spending patterns and saving habits.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="fas fa-shield-alt fa-3x text-secondary mb-3"></i>
+                        <h5 class="card-title">Secure & Private</h5>
+                        <p class="card-text">Your data is encrypted and protected with bank-level security.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Statistics Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center mb-5">
+                <h2 class="display-5 fw-bold">Join Thousands of Savers</h2>
+                <p class="lead text-muted">See what our users are achieving</p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-3 text-center">
+                <h3 class="display-4 text-primary">10K+</h3>
+                <p class="text-muted">Active Users</p>
+            </div>
+            <div class="col-md-3 text-center">
+                <h3 class="display-4 text-success">₦50M+</h3>
+                <p class="text-muted">Total Saved</p>
+            </div>
+            <div class="col-md-3 text-center">
+                <h3 class="display-4 text-warning">25K+</h3>
+                <p class="text-muted">Goals Achieved</p>
+            </div>
+            <div class="col-md-3 text-center">
+                <h3 class="display-4 text-info">99.9%</h3>
+                <p class="text-muted">Uptime</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-5 bg-primary text-white">
+    <div class="container text-center">
+        <h2 class="display-5 fw-bold mb-4">Ready to Start Saving?</h2>
+        <p class="lead mb-4">Join thousands of users who are already achieving their financial goals</p>
+        {% if not current_user.is_authenticated %}
+            <div class="d-flex justify-content-center gap-3">
+                <a href="{{ url_for('main.register') }}" class="btn btn-warning btn-lg">
+                    <i class="fas fa-user-plus me-2"></i>Start Saving Today
+                </a>
+                <a href="{{ url_for('main.login') }}" class="btn btn-outline-light btn-lg">
+                    <i class="fas fa-sign-in-alt me-2"></i>Login to Account
+                </a>
+            </div>
+        {% else %}
+            <a href="{{ url_for('main.dashboard') }}" class="btn btn-warning btn-lg">
+                <i class="fas fa-tachometer-alt me-2"></i>Continue to Dashboard
+            </a>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends "base.html" %} {% block title %}Add Daily Goal - Money Saver{% endblock %} {% block content %}
+<!-- Add Daily Goal Page -->
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="card shadow-lg">
+                    <div class="card-header bg-primary text-white text-center">
+                        <h2 class="mb-0">
+                            <i class="fas fa-calendar-plus me-2"></i>Add Daily Goal
+                        </h2>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" action="{{ url_for('main.add_daily_goal') }}">
+                            {{ form.hidden_tag() }}
+
+                            <div class="mb-3">
+                                {{ form.amount.label(class="form-label") }} {{ form.amount(class="form-control", placeholder="Enter amount (e.g., 1000)") }} {% if form.amount.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.amount.errors %}
+                                    <span>{{ error }}</span> {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-3">
+                                {{ form.description.label(class="form-label") }} {{ form.description(class="form-control", placeholder="Enter description") }} {% if form.description.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.description.errors %}
+                                    <span>{{ error }}</span> {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-3">
+                                {{ form.date.label(class="form-label") }} {{ form.date(class="form-control") }} {% if form.date.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.date.errors %}
+                                    <span>{{ error }}</span> {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="d-grid">
+                                {{ form.submit(class="btn btn-primary btn-lg") }}
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

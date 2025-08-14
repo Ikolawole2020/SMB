@@ -1,0 +1,265 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Money Saver{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="h2">Dashboard</h1>
+            <p class="text-muted">Welcome back, {{ current_user.first_name }}!</p>
+        </div>
+    </div>
+    
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">Total Savings</h6>
+                            <h3 class="mb-0">₦{{ "{:,.2f}".format(total_savings) }}</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-piggy-bank fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">Total Goals</h6>
+                            <h3 class="mb-0">{{ total_goals }}</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-bullseye fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">Completed Goals</h6>
+                            <h3 class="mb-0">{{ completed_goals }}</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-check-circle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">Today's Goal</h6>
+                            <h3 class="mb-0">
+                                {% if today_goal %}
+                                    ₦{{ "{:,.2f}".format(today_goal.amount) }}
+                                {% else %}
+                                    None
+                                {% endif %}
+                            </h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-calendar-day fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Recent Transactions -->
+        <div class="col-lg-8 mb-4">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Recent Transactions</h5>
+                    <a href="{{ url_for('main.transactions') }}" class="btn btn-sm btn-primary">
+                        <i class="fas fa-eye me-1"></i>View All
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if recent_transactions %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Type</th>
+                                        <th>Amount</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for transaction in recent_transactions %}
+                                        <tr>
+                                            <td>{{ transaction.created_at.strftime('%Y-%m-%d') }}</td>
+                                            <td>
+                                                <span class="badge bg-{{ 'success' if transaction.type == 'deposit' else 'danger' }}">
+                                                    {{ transaction.type.title() }}
+                                                </span>
+                                            </td>
+                                            <td>₦{{ "{:,.2f}".format(transaction.amount) }}</td>
+                                            <td>{{ transaction.description or 'N/A' }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-center text-muted">No transactions yet</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Active Goals -->
+        <div class="col-lg-4 mb-4">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Active Goals</h5>
+                    <a href="{{ url_for('main.goals') }}" class="btn btn-sm btn-primary">
+                        <i class="fas fa-plus me-1"></i>Add Goal
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if active_goals %}
+                        {% for goal in active_goals %}
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between">
+                                    <h6 class="mb-1">{{ goal.title }}</h6>
+                                    <small class="text-muted">{{ goal.get_progress_percentage() }}%</small>
+                                </div>
+                                <div class="progress mb-2">
+                                    <div class="progress-bar" role="progressbar" 
+                                         style="width: {{ goal.get_progress_percentage() }}%">
+                                    </div>
+                                </div>
+                                <small class="text-muted">
+                                    ₦{{ "{:,.2f}".format(goal.current_amount) }} / ₦{{ "{:,.2f}".format(goal.target_amount) }}
+                                </small>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-center text-muted">No active goals</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h4 class="mb-3">Quick Actions</h4>
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <a href="{{ url_for('main.add_transaction') }}" class="btn btn-primary w-100">
+                        <i class="fas fa-plus me-2"></i>Add Transaction
+                    </a>
+                </div>
+                <div class="col-md-3">
+                    <a href="{{ url_for('main.add_goal') }}" class="btn btn-success w-100">
+                        <i class="fas fa-bullseye me-2"></i>Create Goal
+                    </a>
+                </div>
+                <div class="col-md-3">
+                    <a href="{{ url_for('main.deposit') }}" class="btn btn-warning w-100">
+                        <i class="fas fa-arrow-up me-2"></i>Deposit Money
+                    </a>
+                </div>
+                <div class="col-md-3">
+                    <a href="{{ url_for('main.withdraw') }}" class="btn btn-danger w-100">
+                        <i class="fas fa-arrow-down me-2"></i>Withdraw Money
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Notifications -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Recent Notifications</h5>
+                    <a href="{{ url_for('main.notifications') }}" class="btn btn-sm btn-secondary">
+                        <i class="fas fa-bell me-1"></i>View All
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if notifications %}
+                        {% for notification in notifications %}
+                            <div class="alert alert-{{ notification.type }} d-flex align-items-center mb-2">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <div>
+                                    <strong>{{ notification.title }}</strong><br>
+                                    <small>{{ notification.message }}</small>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-center text-muted">No new notifications</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Update notification count
+function updateNotificationCount() {
+    fetch('{{ url_for("main.unread_notifications_count") }}')
+        .then(response => response.json())
+        .then(data => {
+            const countElement = document.getElementById('notification-count');
+            if (data.count > 0) {
+                countElement.textContent = data.count;
+                countElement.style.display = 'inline-block';
+            } else {
+                countElement.style.display = 'none';
+            }
+        });
+}
+
+// Update dashboard stats
+function updateDashboardStats() {
+    fetch('{{ url_for("main.transactions_summary") }}')
+        .then(response => response.json())
+        .then(data => {
+            // Update stats if needed
+            console.log('Dashboard stats updated:', data);
+        });
+}
+
+// Initialize dashboard
+document.addEventListener('DOMContentLoaded', function() {
+    updateNotificationCount();
+    updateDashboardStats();
+    
+    // Update every 30 seconds
+    setInterval(updateNotificationCount, 30000);
+    setInterval(updateDashboardStats, 30000);
+});
+</script>
+{% endblock %}

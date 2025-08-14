@@ -1,0 +1,129 @@
+{% extends "base.html" %} {% block title %}Add Bank Account - Money Saver{% endblock %} {% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="card shadow-lg">
+                    <div class="card-header bg-primary text-white text-center">
+                        <h2 class="mb-0"> <i class="fas fa-university me-2"></i>Add Bank Account
+                        </h2>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" action="{{ url_for('main.add_bank_account') }}" id="bankAccountForm">
+                            {{ form.hidden_tag() }}
+
+                            <div class="mb-3">
+                                {{ form.bank_code.label(class="form-label") }} <select class="form-select" id="bank_code" name="bank_code" required>
+                                    <option value="">Loading banks...</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3"> {{ form.account_number.label(class="form-label") }} {{ form.account_number(class="form-control", placeholder="Account Number", id="account_number", maxlength="10") }} <small class="form-text text-muted">Enter 10-digit account number</small>
+                            </div>
+
+                            <div class="mb-3"> {{ form.account_name.label(class="form-label") }} {{ form.account_name(class="form-control", placeholder="Account Name", id="account_name", readonly=True) }} <small class="form-text text-muted">This will be auto-filled after verification</small>
+                            </div>
+
+                            <div class="mb-3"> {{ form.bvn.label(class="form-label") }} {{ form.bvn(class="form-control", placeholder="BVN (optional)") }}
+                            </div>
+
+                            <div class="d-grid">
+                                {{ form.submit(class="btn btn-primary btn-lg") }}
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        loadNigeriaBanks();
+
+        const accountNumberInput = document.getElementById('account_number');
+        const bankCodeSelect = document.getElementById('bank_code');
+
+        accountNumberInput.addEventListener('blur', verifyAccountNumber);
+        bankCodeSelect.addEventListener('change', verifyAccountNumber);
+    });
+
+    async function loadNigeriaBanks() {
+        try {
+            const response = await fetch('/api/nigeria-banks');
+            const data = await response.json();
+
+            if (data.status === 'success') {
+                const bankSelect = document.getElementById('bank_code');
+                bankSelect.innerHTML = '<option value="">Select a bank...</option>';
+
+                data.banks.forEach(bank => {
+                    const option = document.createElement('option');
+                    option.value = bank.code;
+                    option.textContent = bank.name;
+                    bankSelect.appendChild(option);
+                });
+            } else {
+                showMessage('Failed to load banks. Please refresh the page.', 'error');
+            }
+        } catch (error) {
+            console.error('Error loading banks:', error);
+            showMessage('Error loading banks. Please try again.', 'error');
+        }
+    }
+
+    async function verifyAccountNumber() {
+        const accountNumber = document.getElementById('account_number').value;
+        const bankCode = document.getElementById('bank_code').value;
+
+        if (accountNumber.length === 10 && bankCode) {
+            try {
+                const response = await fetch('/api/verify-account', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        account_number: accountNumber,
+                        bank_code: bankCode
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    document.getElementById('account_name').value = data.account_name;
+                    document.getElementById('account_name').readOnly = true;
+                    showMessage('Account verified successfully!', 'success');
+                } else {
+                    document.getElementById('account_name').value = '';
+                    showMessage('Account verification failed. Please check your details.', 'error');
+                }
+            } catch (error) {
+                console.error('Error verifying account:', error);
+                showMessage('Error verifying account. Please try again.', 'error');
+            }
+        }
+    }
+
+    function showMessage(message, type) {
+        // Remove existing messages        const existingMessages = document.querySelectorAll('.alert');
+        existingMessages.forEach(msg => msg.remove());
+
+        // Create new message
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show`;
+        alertDiv.innerHTML = `
+            ${message}            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+
+        const cardBody = document.querySelector('.card-body');
+        cardBody.insertBefore(alertDiv, cardBody.firstChild);
+
+        // Auto-dismiss after 5 seconds
+        setTimeout(() => {
+            alertDiv.remove();
+        }, 5000);
+    }
+</script>{% endblock %}

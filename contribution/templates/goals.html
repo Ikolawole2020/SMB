@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+
+{% block title %}Goals - Money Saver{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="h2">Financial Goals</h1>
+            <p class="text-muted">Set and track your savings goals</p>
+        </div>
+        <div class="col-auto">
+            <a href="{{ url_for('main.add_goal') }}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>Create New Goal
+            </a>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    {% if goals.items %}
+                        <div class="row">
+                            {% for goal in goals.items %}
+                                <div class="col-md-6 col-lg-4 mb-4">
+                                    <div class="card h-100">
+                                        <div class="card-header d-flex justify-content-between align-items-center">
+                                            <h5 class="mb-0">{{ goal.title }}</h5>
+                                            <span class="badge bg-{{ 'success' if goal.status == 'completed' else 'warning' if goal.status == 'active' else 'danger' }}">
+                                                {{ goal.status.title() }}
+                                            </span>
+                                        </div>
+                                        <div class="card-body">
+                                            <p class="text-muted">{{ goal.description or 'No description provided' }}</p>
+                                            
+                                            <div class="mb-3">
+                                                <div class="d-flex justify-content-between">
+                                                    <small>Progress</small>
+                                                    <small>{{ goal.get_progress_percentage() }}%</small>
+                                                </div>
+                                                <div class="progress">
+                                                    <div class="progress-bar" role="progressbar" 
+                                                         style="width: {{ goal.get_progress_percentage() }}%">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <div class="d-flex justify-content-between">
+                                                    <span>Target:</span>
+                                                    <strong>₦{{ "{:,.2f}".format(goal.target_amount) }}</strong>
+                                                </div>
+                                                <div class="d-flex justify-content-between">
+                                                    <span>Current:</span>
+                                                    <strong>₦{{ "{:,.2f}".format(goal.current_amount) }}</strong>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <div class="d-flex justify-content-between">
+                                                    <span>Category:</span>
+                                                    <span class="badge bg-secondary">{{ goal.category.title() }}</span>
+                                                </div>
+                                                <div class="d-flex justify-content-between">
+                                                    <span>Priority:</span>
+                                                    <span class="badge bg-{{ 'danger' if goal.priority == 'high' else 'warning' if goal.priority == 'medium' else 'info' }}">
+                                                        {{ goal.priority.title() }}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <small class="text-muted">
+                                                    <i class="fas fa-calendar me-1"></i>
+                                                    Deadline: {{ goal.deadline.strftime('%Y-%m-%d') }}
+                                                </small>
+                                                <br>
+                                                <small class="text-muted">
+                                                    <i class="fas fa-clock me-1"></i>
+                                                    {{ goal.get_days_remaining() }} days remaining
+                                                </small>
+                                            </div>
+                                        </div>
+                                        <div class="card-footer">
+                                            <div class="d-flex gap-2">
+                                                <button class="btn btn-sm btn-outline-primary flex-fill" 
+                                                        onclick="viewGoal({{ goal.id }})">
+                                                    <i class="fas fa-eye me-1"></i>View
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-success flex-fill" 
+                                                        onclick="addToGoal({{ goal.id }})">
+                                                    <i class="fas fa-plus me-1"></i>Add Funds
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <!-- Pagination -->
+                        <nav aria-label="Goals pagination">
+                            <ul class="pagination justify-content-center">
+                                {% if goals.has_prev %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ url_for('main.goals', page=goals.prev_num) }}">
+                                            Previous
+                                        </a>
+                                    </li>
+                                {% endif %}
+                                
+                                {% for page_num in goals.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+                                    {% if page_num %}
+                                        {% if page_num != goals.page %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="{{ url_for('main.goals', page=page_num) }}">
+                                                    {{ page_num }}
+                                                </a>
+                                            </li>
+                                        {% else %}
+                                            <li class="page-item active">
+                                                <span class="page-link">{{ page_num }}</span>
+                                            </li>
+                                        {% endif %}
+                                    {% else %}
+                                        <li class="page-item disabled">
+                                            <span class="page-link">...</span>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+                                
+                                {% if goals.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ url_for('main.goals', page=goals.next_num) }}">
+                                            Next
+                                        </a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-bullseye fa-3x text-muted mb-3"></i>
+                            <h5>No goals yet</h5>
+                            <p class="text-muted">Start by creating your first savings goal</p>
+                            <a href="{{ url_for('main.add_goal') }}" class="btn btn-primary">
+                                <i class="fas fa-plus me-2"></i>Create First Goal
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function viewGoal(goalId) {
+    // Placeholder for goal details modal
+    alert('Goal details for ID: ' + goalId);
+}
+
+function addToGoal(goalId) {
+    // Placeholder for adding funds to goal
+    alert('Add funds to goal ID: ' + goalId);
+}
+</script>
+{% endblock %}
